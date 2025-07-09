@@ -31,7 +31,12 @@ class DAQ_Move_MCS2(DAQ_Move_base):
     It has been tested on Windows 10, with SLC positioner type with enabled
     sensors.
     """
-
+    mirror1_multiphoton_position= 12
+    mirror2_multiphoton_position = 13
+    mirror1_valence_electron = 14
+    mirror2_valence_electron= 15
+    mirror1_coreshell_electron = 17
+    mirror2_coreshell_electron = 18
     is_multiaxes = True
     axis_names= {'Axis 1': 0, 'Axis 2': 1, 'Axis 3': 2}
 
@@ -44,6 +49,8 @@ class DAQ_Move_MCS2(DAQ_Move_base):
                'value': 'SmarAct MCS2 controller', 'readonly': True},
               {'title': 'Controller locator', 'name': 'controller_locator',
                'type': 'list', 'limits': controller_locators},
+              {'title': 'Mirror:' , 'name': 'mirror', 'type':'list',
+               'limits' : ['800 nm','66 eV','20 eV'], 'value': '800 nm' }
               ] + comon_parameters_fun(axis_names=axis_names, epsilon=_epsilon)
 
     def ini_attributes(self):
@@ -72,13 +79,24 @@ class DAQ_Move_MCS2(DAQ_Move_base):
         self.controller = None
 
     def commit_settings(self, param: Parameter):
-        """
-            | Activate any parameter changes on the hardware.
-            |
-            | Called after a param_tree_changed signal from DAQ_Move_main.
-        # Unused
+        if param.name() == 'mirror':
+            if param.value() == '800 nm':
+                self.axis_value=0
+                self.controller.move_abs(mirror1_multiphoton_position)
+                self.axis_value = 1
+                self.controller.move_abs(mirror2_multiphoton_position)
 
-        """
+            if param.value() == '66 eV':
+                self.axis_value = 0
+                self.controller.move_abs(mirror1_coreshell_electron)
+                self.axis_value = 1
+                self.controller.move_abs(mirror2_coreshell_electron)
+
+            if param.value() == '20 eV':
+                self.axis_value = 0
+                self.controller.move_abs(mirror1_valence_electron)
+                self.axis_value = 1
+                self.controller.move_abs(mirror2_valence_electron)
 
     def ini_stage(self, controller=None):
         """Actuator communication initialization
