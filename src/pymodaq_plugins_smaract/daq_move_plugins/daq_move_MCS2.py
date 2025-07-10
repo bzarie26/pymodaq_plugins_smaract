@@ -37,6 +37,8 @@ class DAQ_Move_MCS2(DAQ_Move_base):
     mirror2_valence_electron= 15
     mirror1_coreshell_electron = 17
     mirror2_coreshell_electron = 18
+    limit_stage_position = 30
+
     is_multiaxes = True
     axis_names= {'Axis 1': 0, 'Axis 2': 1, 'Axis 3': 2}
 
@@ -81,22 +83,35 @@ class DAQ_Move_MCS2(DAQ_Move_base):
     def commit_settings(self, param: Parameter):
         if param.name() == 'mirror':
             if param.value() == '800 nm':
-                self.axis_value=0
-                self.controller.move_abs(mirror1_multiphoton_position)
-                self.axis_value = 1
-                self.controller.move_abs(mirror2_multiphoton_position)
+                answer = input('Did you block the beam? :) (y/n)')
+                if answer == 'y':
+                    self.axis_value=0
+                    self.controller.move_abs(mirror1_multiphoton_position)
+                    self.axis_value = 1
+                    self.controller.move_abs(mirror2_multiphoton_position)
+                else:
+                    print('Sorry, you have to block the beam')
 
             if param.value() == '66 eV':
-                self.axis_value = 0
-                self.controller.move_abs(mirror1_coreshell_electron)
-                self.axis_value = 1
-                self.controller.move_abs(mirror2_coreshell_electron)
+                answer = input('Did you block the beam? :) (y/n)')
+                if answer == 'y':
+                    self.axis_value = 0
+                    self.controller.move_abs(mirror1_coreshell_electron)
+                    self.axis_value = 1
+                    self.controller.move_abs(mirror2_coreshell_electron)
+                else:
+                    print('Sorry, you have to block the beam')
+
 
             if param.value() == '20 eV':
-                self.axis_value = 0
-                self.controller.move_abs(mirror1_valence_electron)
-                self.axis_value = 1
-                self.controller.move_abs(mirror2_valence_electron)
+                answer = input('Did you block the beam? :) (y/n)')
+                if answer == 'y':
+                    self.axis_value = 0
+                    self.controller.move_abs(mirror1_valence_electron)
+                    self.axis_value = 1
+                    self.controller.move_abs(mirror2_valence_electron)
+                else:
+                    print('Sorry, you have to block the beam')
 
     def ini_stage(self, controller=None):
         """Actuator communication initialization
